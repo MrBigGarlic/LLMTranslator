@@ -13,6 +13,7 @@ sys.path.append(os.path.dirname(__file__))
 from enhanced_deepseek_client import EnhancedDeepSeekClient
 from deepl_client import DeepLClient
 from deepseek_semantic_analyzer import DeepSeekSemanticAnalyzer
+from mixed_language_processor import MixedLanguageProcessor
 
 class MultiEngineTranslator:
     """多引擎翻译器 - 结合DeepL和DeepSeek"""
@@ -21,6 +22,7 @@ class MultiEngineTranslator:
         self.deepseek_client = EnhancedDeepSeekClient(deepseek_api_key)
         self.deepl_client = DeepLClient(deepl_api_key)
         self.analyzer = DeepSeekSemanticAnalyzer(deepseek_api_key)
+        self.mixed_language_processor = MixedLanguageProcessor()
         self.use_enhanced_prompts = use_enhanced_prompts
         
         # 长文本处理配置
@@ -132,15 +134,24 @@ class MultiEngineTranslator:
             return self._fallback_selection(original_text, deepl_translation, deepseek_translation)
     
     def _analyze_text_features(self, text: str) -> Dict[str, Any]:
-        """分析文本特征"""
+        """分析文本特征，包括混合语言检测"""
         features = {
             "length": len(text),
             "complexity": "simple",
             "cultural_elements": False,
             "technical_terms": False,
             "idioms": False,
-            "formality": "neutral"
+            "formality": "neutral",
+            "mixed_language": False,
+            "english_words": [],
+            "chinese_words": []
         }
+        
+        # 混合语言分析
+        mixed_analysis = self.mixed_language_processor.preprocess_for_translation(text, "中文", "英语")
+        features["mixed_language"] = mixed_analysis["is_mixed_language"]
+        features["english_words"] = mixed_analysis["english_words"]
+        features["chinese_words"] = mixed_analysis["chinese_words"]
         
         # 长度分析
         if len(text) > 200:
@@ -154,8 +165,8 @@ class MultiEngineTranslator:
             features["cultural_elements"] = True
             features["idioms"] = True
         
-        # 技术术语检测
-        technical_indicators = ['API', 'HTTP', 'JSON', 'XML', '数据库', '算法', '编程', '代码']
+        # 技术术语检测（包括英语技术术语）
+        technical_indicators = ['API', 'HTTP', 'JSON', 'XML', '数据库', '算法', '编程', '代码', 'CPU', 'GPU', 'AI', 'ML', 'NLP']
         if any(indicator in text for indicator in technical_indicators):
             features["technical_terms"] = True
         
@@ -282,7 +293,7 @@ DeepSeek评分:
     
     def _intelligent_selection(self, deepl_translation: str, deepseek_translation: str, 
                              quality_scores: Dict[str, Any], text_features: Dict[str, Any]) -> Tuple[str, str, float]:
-        """智能选择策略"""
+        """智能选择策略，支持混合语言处理"""
         deepl_score = quality_scores["deepl"]["overall"]
         deepseek_score = quality_scores["deepseek"]["overall"]
         
@@ -294,7 +305,10 @@ DeepSeek评分:
                 return deepseek_translation, "deepseek_selected", deepseek_score
         
         # 分数接近时，使用特征导向策略
-        if text_features.get("cultural_elements") or text_features.get("idioms"):
+        if text_features.get("mixed_language"):
+            # 混合语言文本优先使用DeepSeek（更好的上下文理解）
+            return deepseek_translation, "deepseek_mixed_language", 0.9
+        elif text_features.get("cultural_elements") or text_features.get("idioms"):
             # 文化内容优先使用DeepSeek
             return deepseek_translation, "deepseek_cultural", 0.9
         elif text_features.get("technical_terms"):

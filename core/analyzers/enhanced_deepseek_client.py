@@ -1,11 +1,12 @@
 """
 增强版DeepSeek API客户端
-提供优化的翻译功能和智能prompt生成
+提供优化的翻译功能、智能prompt生成和混合语言处理
 """
 import requests
 import time
 from typing import Optional, Dict, Any
 from config import DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL
+from mixed_language_processor import MixedLanguageProcessor
 
 class EnhancedDeepSeekClient:
     """增强版DeepSeek API客户端"""
@@ -20,6 +21,7 @@ class EnhancedDeepSeekClient:
         self.max_retries = 3
         self.retry_delay = 1
         self.timeout = 60
+        self.mixed_language_processor = MixedLanguageProcessor()
     
     def translate_text_with_analysis(self, text: str, source_lang: str, target_lang: str, 
                                    use_enhanced_prompts: bool = True) -> Dict[str, Any]:
@@ -75,14 +77,31 @@ class EnhancedDeepSeekClient:
             return result
     
     def _generate_enhanced_prompt(self, text: str, source_lang: str, target_lang: str) -> str:
-        """生成增强的翻译prompt"""
+        """生成增强的翻译prompt，支持混合语言处理"""
+        # 检测混合语言
+        mixed_analysis = self.mixed_language_processor.preprocess_for_translation(text, source_lang, target_lang)
+        
         # 检测特殊表达
         special_expressions = self._detect_special_expressions(text)
         
         base_prompt = f"请将以下{source_lang}文本翻译成{target_lang}，"
         
+        # 混合语言处理
+        if mixed_analysis['is_mixed_language']:
+            base_prompt += "注意以下混合语言处理要求：\n\n"
+            base_prompt += "混合语言处理规则：\n"
+            base_prompt += "1. 保持英语专有名词、缩写、品牌名等不翻译\n"
+            base_prompt += "2. 确保翻译自然流畅，符合目标语言习惯\n"
+            base_prompt += "3. 对于技术术语，优先使用目标语言的标准译法\n"
+            
+            if mixed_analysis['translation_hints']:
+                base_prompt += "\n特殊处理建议：\n"
+                for hint in mixed_analysis['translation_hints']:
+                    base_prompt += f"- {hint}\n"
+            base_prompt += "\n"
+        
+        # 特殊表达处理
         if special_expressions:
-            base_prompt += "注意以下特殊要求：\n\n"
             base_prompt += "特殊表达处理：\n"
             for expr in special_expressions:
                 if expr in self._get_special_expressions_db():

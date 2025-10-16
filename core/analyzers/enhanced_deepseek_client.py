@@ -58,11 +58,9 @@ class EnhancedDeepSeekClient:
                 result["enhancement_applied"] = True
                 result["enhancement_info"]["optimization_applied"] = True
                 
-                # 检测特殊表达
-                special_expressions = self._detect_special_expressions(text)
-                if special_expressions:
-                    result["enhancement_info"]["special_expressions_found"] = special_expressions
-                    result["enhancement_info"]["cultural_context_found"] = True
+                # AI智能分析（不再使用固定词汇库）
+                result["enhancement_info"]["ai_analysis_enabled"] = True
+                result["enhancement_info"]["cultural_context_found"] = True
             else:
                 optimized_prompt = self._generate_basic_prompt(text, source_lang, target_lang)
             
@@ -77,74 +75,35 @@ class EnhancedDeepSeekClient:
             return result
     
     def _generate_enhanced_prompt(self, text: str, source_lang: str, target_lang: str) -> str:
-        """生成增强的翻译prompt，支持混合语言处理"""
+        """生成增强的翻译prompt，支持混合语言处理和智能分析"""
         # 检测混合语言
         mixed_analysis = self.mixed_language_processor.preprocess_for_translation(text, source_lang, target_lang)
         
-        # 检测特殊表达
-        special_expressions = self._detect_special_expressions(text)
-        
-        base_prompt = f"请将以下{source_lang}文本翻译成{target_lang}，"
+        base_prompt = f"请将以下{source_lang}文本翻译成{target_lang}。\n\n"
         
         # 混合语言处理
         if mixed_analysis['is_mixed_language']:
-            base_prompt += "注意以下混合语言处理要求：\n\n"
-            base_prompt += "混合语言处理规则：\n"
+            base_prompt += "注意：文本包含混合语言内容，请按以下要求处理：\n"
             base_prompt += "1. 保持英语专有名词、缩写、品牌名等不翻译\n"
             base_prompt += "2. 确保翻译自然流畅，符合目标语言习惯\n"
-            base_prompt += "3. 对于技术术语，优先使用目标语言的标准译法\n"
-            
-            if mixed_analysis['translation_hints']:
-                base_prompt += "\n特殊处理建议：\n"
-                for hint in mixed_analysis['translation_hints']:
-                    base_prompt += f"- {hint}\n"
-            base_prompt += "\n"
+            base_prompt += "3. 对于技术术语，优先使用目标语言的标准译法\n\n"
         
-        # 特殊表达处理
-        if special_expressions:
-            base_prompt += "特殊表达处理：\n"
-            for expr in special_expressions:
-                if expr in self._get_special_expressions_db():
-                    suggestion = self._get_special_expressions_db()[expr]
-                    base_prompt += f"- '{expr}': {suggestion}\n"
-            base_prompt += "\n"
+        # 智能分析指导
+        base_prompt += "翻译分析要求：\n"
+        base_prompt += "1. 仔细分析文本中的文化特定表达、习语、网络用语等\n"
+        base_prompt += "2. 理解字面意义与实际意义的差异\n"
+        base_prompt += "3. 识别可能的文化背景和语境\n"
+        base_prompt += "4. 考虑目标语言的文化适应性\n\n"
         
-        base_prompt += f"翻译要求：\n"
-        base_prompt += f"1. 保持原文的语调和情感\n"
-        base_prompt += f"2. 确保翻译自然流畅\n"
-        base_prompt += f"3. 如有文化差异，请提供适当的解释\n"
-        base_prompt += f"4. 只返回翻译结果，不要添加解释\n\n"
+        base_prompt += "翻译原则：\n"
+        base_prompt += "1. 保持原文的语调和情感\n"
+        base_prompt += "2. 确保翻译自然流畅\n"
+        base_prompt += "3. 对于文化特定表达，提供准确且符合目标语言习惯的翻译\n"
+        base_prompt += "4. 只返回翻译结果，不要添加解释\n\n"
         base_prompt += f"原文：{text}"
         
         return base_prompt
     
-    def _detect_special_expressions(self, text: str) -> list:
-        """检测特殊表达"""
-        special_expressions = []
-        expressions_db = self._get_special_expressions_db()
-        
-        for expr in expressions_db.keys():
-            if expr in text:
-                special_expressions.append(expr)
-        
-        return special_expressions
-    
-    def _get_special_expressions_db(self) -> dict:
-        """获取特殊表达数据库"""
-        return {
-            '仨尖儿': 'three aces (best cards in poker)',
-            '坐11路': 'walk (take the "number 11 bus" - meaning walk on two legs)',
-            '打酱油': 'just passing by / not getting involved',
-            '吃瓜': 'watch the drama / be a spectator',
-            '躺平': 'lie flat / give up striving',
-            '内卷': 'involution / excessive competition',
-            '凡尔赛': 'Versailles (referring to showing off in a subtle way)',
-            'yyds': 'eternal god (slang for "amazing")',
-            '绝绝子': 'absolutely amazing (slang)',
-            '破防': 'break through defense (slang for being moved/touched)',
-            'emo': 'emotional (feeling sad/depressed)',
-            '社死': 'social death (extreme embarrassment)'
-        }
     
     def _generate_basic_prompt(self, text: str, source_lang: str, target_lang: str) -> str:
         """生成基础翻译prompt"""

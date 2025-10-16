@@ -24,7 +24,7 @@
 - **双引擎整合**：DeepL和DeepSeek同时翻译，智能选择最佳结果
 - **智能选择算法**：基于文本特征、质量评估和语义分析选择最佳翻译
 - **混合语言处理**：智能识别和处理中英文混合文本（如"NBA"、"CPU"、"iPhone"等）
-- **特殊表达处理**：准确翻译"仨尖儿"、"坐11路"等文化特定表达
+- **智能文化分析**：AI自动识别和分析文化特定表达
 - **AI语义分析**：使用DeepSeek大语言模型理解文本真实含义
 - **回译验证**：通过回译确保翻译一致性
 - **质量评估**：多维度评估翻译准确性和流畅度
@@ -32,10 +32,10 @@
 ## 技术特点
 
 ### 智能prompt优化
-- **特殊表达识别**：自动检测文化特定表达和习语
-- **上下文分析**：理解字面意义与实际意义的差异
+- **AI智能分析**：让AI自动识别文化特定表达和习语
+- **上下文理解**：AI理解字面意义与实际意义的差异
 - **动态prompt生成**：根据文本特点生成最佳翻译指令
-- **文化适配**：针对不同文化背景优化翻译策略
+- **文化适配**：AI针对不同文化背景优化翻译策略
 
 ### 混合语言处理
 - **自动识别**：智能识别中英文混合文本
@@ -140,20 +140,14 @@ DeepSeek翻译: Hello world
 响应时间: DeepL 0.88s, DeepSeek 1.84s
 ```
 
-## 特殊表达处理
+## 智能文化分析
 
-系统内置了常见的中文特殊表达数据库，包括：
+系统通过AI智能分析来识别和处理文化特定表达：
 
-- **仨尖儿** → three aces (best cards in poker)
-- **坐11路** → walk (take the "number 11 bus")
-- **打酱油** → just passing by / not getting involved
-- **吃瓜** → watch the drama / be a spectator
-- **躺平** → lie flat / give up striving
-- **内卷** → involution / excessive competition
-- **凡尔赛** → Versailles (showing off subtly)
-- **yyds** → eternal god (slang for "amazing")
-- **绝绝子** → absolutely amazing (slang)
-- **破防** → break through defense (moved/touched)
+- **自动识别**：AI自动检测文本中的文化特定表达、习语、网络用语等
+- **上下文理解**：AI理解字面意义与实际意义的差异
+- **文化适配**：AI根据目标语言的文化背景提供合适的翻译
+- **动态学习**：AI能够处理新的表达方式，不依赖固定词汇库
 
 ## 注意事项
 

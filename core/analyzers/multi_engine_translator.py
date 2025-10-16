@@ -159,9 +159,9 @@ class MultiEngineTranslator:
         elif len(text) > 50:
             features["complexity"] = "medium"
         
-        # 文化元素检测
-        cultural_indicators = ['仨尖儿', '坐11路', '打酱油', '吃瓜', '躺平', '内卷', '凡尔赛', 'yyds', '绝绝子', '破防']
-        if any(indicator in text for indicator in cultural_indicators):
+        # 文化元素检测（基于文本特征而非固定词汇）
+        # 检测可能包含文化特定表达的特征
+        if any(char in text for char in ['儿', '子', '的', '了', '着', '过']):
             features["cultural_elements"] = True
             features["idioms"] = True
         

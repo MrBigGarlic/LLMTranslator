@@ -1,0 +1,32 @@
+{
+  "scene": "technology",
+  "description": "科技和IT领域术语",
+  "keywords": ["接口", "前端", "后端", "数据库", "API", "接口", "部署", "上线"],
+  "expressions": [
+    {
+      "source": "接口",
+      "meaning": "API接口或用户界面",
+      "translation_en": "interface / API endpoint",
+      "translation_hint": "根据上下文判断是API接口还是UI界面，API接口用'endpoint'，用户界面用'interface'",
+      "context": "软件开发",
+      "example_source": "这个接口需要调用第三方API",
+      "example_target": "This endpoint needs to call a third-party API",
+      "cultural_note": "在软件开发中，'接口'可以指API接口或用户界面，需要根据上下文判断"
+    },
+    {
+      "source": "上线",
+      "meaning": "系统或功能正式发布、投入使用",
+      "translation_en": "go live / launch / deploy",
+      "translation_hint": "强调系统从开发环境到生产环境的过程",
+      "context": "系统发布",
+      "example_source": "新功能下周上线",
+      "example_target": "The new feature will go live next week",
+      "cultural_note": "IT行业术语，指系统或功能正式对外提供服务"
+    }
+  ],
+  "translation_guidelines": [
+    "技术术语通常有标准的英文对应",
+    "注意区分同一中文词在不同上下文中的不同含义",
+    "保持技术文档的专业性和准确性"
+  ]
+}

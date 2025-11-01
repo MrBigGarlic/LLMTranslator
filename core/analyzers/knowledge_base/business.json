@@ -1,0 +1,42 @@
+{
+  "scene": "business",
+  "description": "商务和职场用语",
+  "keywords": ["落地", "闭环", "赋能", "抓手", "痛点", "打法", "布局", "赛道"],
+  "expressions": [
+    {
+      "source": "落地",
+      "meaning": "实施方案、项目正式启动执行",
+      "translation_en": "implement / execute / roll out",
+      "translation_hint": "不能直译为'land'，要用商务英语术语",
+      "context": "项目管理",
+      "example_source": "这个项目下周就能落地",
+      "example_target": "This project will be implemented next week",
+      "cultural_note": "商务术语，指将计划或想法转化为实际执行"
+    },
+    {
+      "source": "闭环",
+      "meaning": "形成完整的循环，从开始到结束的完整流程",
+      "translation_en": "closed loop / complete cycle / full circle",
+      "translation_hint": "商务术语，强调流程的完整性和连续性",
+      "context": "业务流程",
+      "example_source": "我们要形成营销闭环",
+      "example_target": "We need to form a closed marketing loop",
+      "cultural_note": "强调业务流程的完整性，从用户获取到留存的全流程"
+    },
+    {
+      "source": "赋能",
+      "meaning": "给予能力、提升能力",
+      "translation_en": "empower / enable / enhance capabilities",
+      "translation_hint": "现代商务术语，强调提供能力和支持",
+      "context": "团队管理",
+      "example_source": "我们要赋能一线团队",
+      "example_target": "We need to empower the frontline teams",
+      "cultural_note": "强调通过提供资源、工具、培训等方式提升团队能力"
+    }
+  ],
+  "translation_guidelines": [
+    "商务术语通常有固定的英文对应词",
+    "要注意保持商务英语的专业性和准确性",
+    "理解术语的实际业务含义，而非字面翻译"
+  ]
+}

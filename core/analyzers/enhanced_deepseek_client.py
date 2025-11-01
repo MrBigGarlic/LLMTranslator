@@ -4,14 +4,25 @@
 """
 import requests
 import time
+import os
+import sys
 from typing import Optional, Dict, Any
-from config import DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL
+from config import DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, ENABLE_RAG, KNOWLEDGE_BASE_PATH, RAG_TOP_K
 from mixed_language_processor import MixedLanguageProcessor
+
+# 添加knowledge_base路径
+sys.path.append(os.path.dirname(__file__))
+try:
+    from knowledge_base.prompt_enhancer import RAGPromptEnhancer
+    RAG_AVAILABLE = True
+except ImportError:
+    RAG_AVAILABLE = False
+    RAGPromptEnhancer = None
 
 class EnhancedDeepSeekClient:
     """增强版DeepSeek API客户端"""
     
-    def __init__(self, api_key: str = None):
+    def __init__(self, api_key: str = None, use_rag: bool = None):
         self.api_key = api_key or DEEPSEEK_API_KEY
         self.base_url = DEEPSEEK_BASE_URL
         self.headers = {
@@ -22,6 +33,17 @@ class EnhancedDeepSeekClient:
         self.retry_delay = 1
         self.timeout = 60
         self.mixed_language_processor = MixedLanguageProcessor()
+        
+        # RAG配置
+        self.use_rag = use_rag if use_rag is not None else (ENABLE_RAG and RAG_AVAILABLE)
+        self.rag_enhancer = None
+        if self.use_rag and RAG_AVAILABLE:
+            try:
+                knowledge_base_path = KNOWLEDGE_BASE_PATH or os.path.join(os.path.dirname(__file__), 'knowledge_base')
+                self.rag_enhancer = RAGPromptEnhancer(knowledge_base_path)
+            except Exception as e:
+                print(f"RAG初始化失败，将使用基础prompt: {str(e)}")
+                self.use_rag = False
     
     def translate_text_with_analysis(self, text: str, source_lang: str, target_lang: str, 
                                    use_enhanced_prompts: bool = True) -> Dict[str, Any]:
@@ -75,7 +97,40 @@ class EnhancedDeepSeekClient:
             return result
     
     def _generate_enhanced_prompt(self, text: str, source_lang: str, target_lang: str) -> str:
-        """生成增强的翻译prompt，支持混合语言处理和智能分析"""
+        """生成增强的翻译prompt，支持混合语言处理和RAG增强"""
+        # 如果启用RAG且有RAG增强器，使用RAG增强的prompt
+        if self.use_rag and self.rag_enhancer:
+            try:
+                rag_prompt = self.rag_enhancer.generate_enhanced_prompt(
+                    text, source_lang, target_lang, use_rag=True, top_k=RAG_TOP_K
+                )
+                # 在RAG prompt基础上添加混合语言处理
+                mixed_analysis = self.mixed_language_processor.preprocess_for_translation(text, source_lang, target_lang)
+                if mixed_analysis['is_mixed_language']:
+                    # 在RAG prompt的【翻译要求】前插入混合语言提示
+                    if "【翻译要求】" in rag_prompt:
+                        mixed_lang_section = "\n注意：文本包含混合语言内容，请按以下要求处理：\n"
+                        mixed_lang_section += "1. 保持英语专有名词、缩写、品牌名等不翻译\n"
+                        mixed_lang_section += "2. 确保翻译自然流畅，符合目标语言习惯\n"
+                        mixed_lang_section += "3. 对于技术术语，优先使用目标语言的标准译法\n\n"
+                        rag_prompt = rag_prompt.replace("【翻译要求】", mixed_lang_section + "【翻译要求】")
+                    else:
+                        # 如果没有【翻译要求】部分，添加到末尾
+                        mixed_lang_section = "\n\n注意：文本包含混合语言内容，请按以下要求处理：\n"
+                        mixed_lang_section += "1. 保持英语专有名词、缩写、品牌名等不翻译\n"
+                        mixed_lang_section += "2. 确保翻译自然流畅，符合目标语言习惯\n"
+                        rag_prompt = rag_prompt.replace(f"\n原文：{text}", mixed_lang_section + f"\n原文：{text}")
+                return rag_prompt
+            except Exception as e:
+                print(f"RAG prompt生成失败，使用基础增强prompt: {str(e)}")
+                # 降级到原有方式
+                return self._generate_fallback_enhanced_prompt(text, source_lang, target_lang)
+        else:
+            # 使用原有的增强prompt（无RAG）
+            return self._generate_fallback_enhanced_prompt(text, source_lang, target_lang)
+    
+    def _generate_fallback_enhanced_prompt(self, text: str, source_lang: str, target_lang: str) -> str:
+        """生成基础的增强prompt（无RAG时使用）"""
         # 检测混合语言
         mixed_analysis = self.mixed_language_processor.preprocess_for_translation(text, source_lang, target_lang)
         

@@ -31,11 +31,13 @@
 
 ## 技术特点
 
-### 智能prompt优化
-- **AI智能分析**：让AI自动识别文化特定表达和习语
-- **上下文理解**：AI理解字面意义与实际意义的差异
-- **动态prompt生成**：根据文本特点生成最佳翻译指令
-- **文化适配**：AI针对不同文化背景优化翻译策略
+### 智能prompt优化（RAG增强）
+- **RAG知识库**：基于场景的知识库，支持快速检索和扩展
+- **场景识别**：自动识别文本场景（日常生活、商务、科技等）
+- **知识检索**：根据场景和文本内容检索相关知识
+- **动态prompt生成**：将检索到的知识整合到翻译prompt中
+- **外部API支持**：可选集成ConceptNet和有道词典API
+- **可扩展性**：通过JSON文件轻松扩展新场景和表达
 
 ### 混合语言处理
 - **自动识别**：智能识别中英文混合文本
@@ -60,20 +62,30 @@
 
 ```
 LLMTranslator_02/
-├── main.py                          # 单引擎翻译主程序（保留）
-├── main_multi_engine.py             # 智能翻译主程序
+├── main.py                          # 单引擎翻译主程序
+├── main_multi_engine.py             # 多引擎智能翻译主程序
 ├── start.sh                         # 启动脚本
-├── config.py                        # 配置文件
+├── config.py                        # 配置文件（API密钥等）
 ├── requirements.txt                 # 依赖包列表
 ├── input.txt                        # 长文本输入文件
 ├── output.txt                       # 分析结果输出文件
 ├── core/
 │   ├── analyzers/
-│   │   ├── enhanced_deepseek_client.py    # 增强版DeepSeek客户端
+│   │   ├── enhanced_deepseek_client.py    # 增强版DeepSeek客户端（支持RAG）
 │   │   ├── deepl_client.py               # DeepL客户端
 │   │   ├── multi_engine_translator.py    # 智能翻译器
-│   │   ├── mixed_language_processor.py   # 混合语言处理器
-│   │   └── deepseek_semantic_analyzer.py # 语义分析器
+│   │   ├── mixed_language_processor.py    # 混合语言处理器
+│   │   ├── deepseek_semantic_analyzer.py # 语义分析器
+│   │   └── knowledge_base/               # RAG知识库模块
+│   │       ├── __init__.py
+│   │       ├── loader.py                  # 知识库加载器
+│   │       ├── retriever.py               # 知识检索器
+│   │       ├── scene_detector.py          # 场景识别器
+│   │       ├── prompt_enhancer.py          # RAG增强prompt生成器
+│   │       ├── external_apis.py           # 外部API集成（ConceptNet、有道词典）
+│   │       ├── daily_life.json            # 日常生活场景知识库
+│   │       ├── business.json              # 商务场景知识库
+│   │       └── technology.json            # 科技场景知识库
 │   └── utils/
 │       └── simple_input_handler.py       # 输入处理器
 └── README.md                        # 项目说明文档

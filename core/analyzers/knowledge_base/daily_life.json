@@ -1,0 +1,44 @@
+{
+  "scene": "daily_life",
+  "description": "日常生活和市井用语",
+  "keywords": ["三尖儿", "仨尖儿", "坐11路", "打酱油", "走亲戚", "遛弯", "打牌"],
+  "expressions": [
+    {
+      "source": "三尖儿",
+      "variants": ["仨尖儿"],
+      "meaning": "扑克牌中的三张A，最大的牌",
+      "translation_en": "three aces",
+      "translation_hint": "不能直译为'three points'，要理解其实际含义。'尖儿'在中国扑克牌术语中指A牌",
+      "context": "扑克牌游戏",
+      "example_source": "这把牌我抓到了三尖儿",
+      "example_target": "I got three aces in this hand",
+      "cultural_note": "这是中国扑克牌游戏的术语，'尖儿'指A牌，三尖儿是最大的牌"
+    },
+    {
+      "source": "坐11路",
+      "meaning": "步行（因为两条腿像数字11）",
+      "translation_en": "take the 11 bus / walk",
+      "translation_hint": "口语化幽默表达，可用'walk'直译，或意译为'take the 11 bus'以保留幽默效果",
+      "context": "日常出行",
+      "example_source": "今天坐11路去上班",
+      "example_target": "I walked to work today / I took the 11 bus to work today",
+      "cultural_note": "这是一个幽默的说法，因为两条腿并排看起来像数字11"
+    },
+    {
+      "source": "打酱油",
+      "meaning": "路过、无关紧要、不参与",
+      "translation_en": "pass by / have nothing to do with it / bystander",
+      "translation_hint": "字面意思是'buy soy sauce'，但实际意思是表示与某事无关或只是路过",
+      "context": "日常对话",
+      "example_source": "我只是路过打酱油的",
+      "example_target": "I'm just passing by / I'm just a bystander",
+      "cultural_note": "网络流行语，表示与某事无关，只是路过或围观"
+    }
+  ],
+  "translation_guidelines": [
+    "这类表达通常字面意义与实际意义不同",
+    "需要理解其实际含义和文化背景",
+    "翻译时要在准确性和可读性之间平衡",
+    "对于幽默表达，尽量保留原文的幽默效果"
+  ]
+}

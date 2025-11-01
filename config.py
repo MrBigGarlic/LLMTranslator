@@ -30,3 +30,14 @@ LANGUAGE_MAPPING = {
 
 # 语义相似度阈值
 SIMILARITY_THRESHOLD = 0.7
+
+# RAG配置
+ENABLE_RAG = os.getenv('ENABLE_RAG', 'true').lower() == 'true'
+KNOWLEDGE_BASE_PATH = os.getenv('KNOWLEDGE_BASE_PATH', None)
+RAG_TOP_K = int(os.getenv('RAG_TOP_K', '5'))
+RAG_MIN_CONFIDENCE = float(os.getenv('RAG_MIN_CONFIDENCE', '0.3'))
+
+# 外部知识库API配置（可选）
+USE_EXTERNAL_APIS = os.getenv('USE_EXTERNAL_APIS', 'false').lower() == 'true'
+YOUDAO_APP_KEY = os.getenv('YOUDAO_APP_KEY', None)
+YOUDAO_APP_SECRET = os.getenv('YOUDAO_APP_SECRET', None)

@@ -41,3 +41,7 @@ RAG_MIN_CONFIDENCE = float(os.getenv('RAG_MIN_CONFIDENCE', '0.3'))
 USE_EXTERNAL_APIS = os.getenv('USE_EXTERNAL_APIS', 'false').lower() == 'true'
 YOUDAO_APP_KEY = os.getenv('YOUDAO_APP_KEY', None)
 YOUDAO_APP_SECRET = os.getenv('YOUDAO_APP_SECRET', None)
+
+# 知识库自动学习配置
+ENABLE_AUTO_LEARNING = os.getenv('ENABLE_AUTO_LEARNING', 'true').lower() == 'true'  # 是否启用自动学习
+AUTO_LEARNING_SAVE = os.getenv('AUTO_LEARNING_SAVE', 'true').lower() == 'true'  # 是否自动保存（False需要手动确认）

@@ -5,5 +5,6 @@ from .loader import KnowledgeBaseLoader
 from .retriever import KnowledgeRetriever
 from .scene_detector import SceneDetector
 from .prompt_enhancer import RAGPromptEnhancer
+from .learner import KnowledgeBaseLearner
 
-__all__ = ['KnowledgeBaseLoader', 'KnowledgeRetriever', 'SceneDetector', 'RAGPromptEnhancer']
+__all__ = ['KnowledgeBaseLoader', 'KnowledgeRetriever', 'SceneDetector', 'RAGPromptEnhancer', 'KnowledgeBaseLearner']

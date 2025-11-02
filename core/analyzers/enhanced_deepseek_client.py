@@ -7,17 +7,19 @@ import time
 import os
 import sys
 from typing import Optional, Dict, Any
-from config import DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, ENABLE_RAG, KNOWLEDGE_BASE_PATH, RAG_TOP_K
+from config import DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, ENABLE_RAG, KNOWLEDGE_BASE_PATH, RAG_TOP_K, ENABLE_AUTO_LEARNING, AUTO_LEARNING_SAVE
 from mixed_language_processor import MixedLanguageProcessor
 
 # 添加knowledge_base路径
 sys.path.append(os.path.dirname(__file__))
 try:
     from knowledge_base.prompt_enhancer import RAGPromptEnhancer
+    from knowledge_base.learner import KnowledgeBaseLearner
     RAG_AVAILABLE = True
 except ImportError:
     RAG_AVAILABLE = False
     RAGPromptEnhancer = None
+    KnowledgeBaseLearner = None
 
 class EnhancedDeepSeekClient:
     """增强版DeepSeek API客户端"""
@@ -44,6 +46,17 @@ class EnhancedDeepSeekClient:
             except Exception as e:
                 print(f"RAG初始化失败，将使用基础prompt: {str(e)}")
                 self.use_rag = False
+        
+        # 自动学习配置
+        self.enable_learning = ENABLE_AUTO_LEARNING and RAG_AVAILABLE
+        self.learner = None
+        if self.enable_learning and KnowledgeBaseLearner:
+            try:
+                knowledge_base_path = KNOWLEDGE_BASE_PATH or os.path.join(os.path.dirname(__file__), 'knowledge_base')
+                self.learner = KnowledgeBaseLearner(knowledge_base_path, auto_save=AUTO_LEARNING_SAVE)
+            except Exception as e:
+                print(f"自动学习初始化失败: {str(e)}")
+                self.enable_learning = False
     
     def translate_text_with_analysis(self, text: str, source_lang: str, target_lang: str, 
                                    use_enhanced_prompts: bool = True) -> Dict[str, Any]:
@@ -89,6 +102,20 @@ class EnhancedDeepSeekClient:
             # 执行翻译
             translation = self._call_deepseek_api(optimized_prompt)
             result["translation"] = translation
+            
+            # 自动学习：如果翻译成功且启用了学习，尝试学习新表达
+            if self.enable_learning and self.learner and translation:
+                # 检查知识库中是否有匹配
+                if self.use_rag and self.rag_enhancer:
+                    retrieved = self.rag_enhancer.retriever.retrieve(text, top_k=1)
+                    # 如果没有检索到相关知识，可能是新表达
+                    if not retrieved or retrieved[0].get("relevance_score", 0) < 0.5:
+                        learned_expr = self.learner.learn_from_translation(
+                            text, translation, source_lang, target_lang
+                        )
+                        if learned_expr:
+                            result["enhancement_info"]["new_expression_learned"] = True
+                            result["enhancement_info"]["learned_expression"] = learned_expr.get("source")
             
             return result
             

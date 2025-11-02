@@ -36,8 +36,9 @@
 - **场景识别**：自动识别文本场景（日常生活、商务、科技等）
 - **知识检索**：根据场景和文本内容检索相关知识
 - **动态prompt生成**：将检索到的知识整合到翻译prompt中
+- **自动学习**：从翻译过程中自动学习新表达，持续增强知识库
 - **外部API支持**：可选集成ConceptNet和有道词典API
-- **可扩展性**：通过JSON文件轻松扩展新场景和表达
+- **可扩展性**：通过JSON文件轻松扩展新场景和表达，支持自动和手动两种方式
 
 ### 混合语言处理
 - **自动识别**：智能识别中英文混合文本
@@ -58,6 +59,13 @@
 - **批量处理**：高效处理大量文本内容
 - **结果合并**：智能合并分段翻译结果
 
+## 文档说明
+
+- **README.md** - 项目使用说明和功能介绍
+- **TRANSLATION_METHODOLOGY.md** - 融合翻译与反译验证的方法论（学术文档）
+
+详细的方法论说明、技术原理和设计思路请参阅 `TRANSLATION_METHODOLOGY.md`。
+
 ## 项目结构
 
 ```
@@ -69,6 +77,8 @@ LLMTranslator_02/
 ├── requirements.txt                 # 依赖包列表
 ├── input.txt                        # 长文本输入文件
 ├── output.txt                       # 分析结果输出文件
+├── README.md                        # 项目说明文档
+├── TRANSLATION_METHODOLOGY.md       # 翻译方法论文档（学术）
 ├── core/
 │   ├── analyzers/
 │   │   ├── enhanced_deepseek_client.py    # 增强版DeepSeek客户端（支持RAG）
@@ -81,14 +91,14 @@ LLMTranslator_02/
 │   │       ├── loader.py                  # 知识库加载器
 │   │       ├── retriever.py               # 知识检索器
 │   │       ├── scene_detector.py          # 场景识别器
-│   │       ├── prompt_enhancer.py          # RAG增强prompt生成器
+│   │       ├── prompt_enhancer.py         # RAG增强prompt生成器
+│   │       ├── learner.py                 # 知识库自动学习器
 │   │       ├── external_apis.py           # 外部API集成（ConceptNet、有道词典）
 │   │       ├── daily_life.json            # 日常生活场景知识库
 │   │       ├── business.json              # 商务场景知识库
 │   │       └── technology.json            # 科技场景知识库
 │   └── utils/
 │       └── simple_input_handler.py       # 输入处理器
-└── README.md                        # 项目说明文档
 ```
 
 ## 安装和配置
